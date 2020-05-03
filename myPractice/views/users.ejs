@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <p id="displayId"></p>
+    <input type="text" class="roomId">
+    <button class="enter">enter</button>
+    <video autoplay playsinline id="remoteVideo"></video>
+    <video autoplay playsinline id="localVideo"></video>
+</body>
+
+<!-- jquery -->
+<script src="https://code.jquery.com/jquery-3.5.0.min.js"
+  integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+
+<!-- adapter.js -->
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
+<!-- socket.io -->
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- peerjs -->
+<script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
+
+<!-- js -->
+<script src="/javascripts/users.js"></script>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>wack</title>
+  <link rel='stylesheet' href='/stylesheets/index.css' />
+</head>
+
+<body>
+  <h2>Video room</h2>
+  <p id="displayId"></p>
+  <h2>What is your room name</h2>
+    <input type="text" id="roomName">
+    <button>make</button>
+  <input type="text" id="connId">
+  <button id="connButton">Connect</button>
+  <button id="hangout">hangout</button></br></br>
+  <video autoplay playsinline id="remoteVideo"></video>
+  <video autoplay playsinline id="localVideo"></video>
+</body>
+
+<!-- jquery -->
+<script src="https://code.jquery.com/jquery-3.5.0.min.js"
+  integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+
+<!-- adapter.js -->
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
+<!-- socket.io -->
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- peerjs -->
+<script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
+
+<!-- js -->
+<script src="/javascripts/room.js"></script>
+
+</html>
