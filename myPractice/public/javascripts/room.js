@@ -8,6 +8,8 @@ function askName() {
     $('#displayId').hide();
     $('#hangout').hide();
     $('#localVideo').hide();
+    $('#placeLocal').hide();
+    $('#placeRemote').hide();
 }
 
 async function makeRoom() {
@@ -16,10 +18,11 @@ async function makeRoom() {
     $('#displayId').show();
     $('#hangout').show();
     $('#localVideo').show();
+    $('#placeLocal').show();
+    $('#placeRemote').show();
     $('#askRoomName').hide();
     $('#roomName').hide();
     $('#make').hide();
-
 
     /////////////////////////////////////////////////////////////////
     ////////////////////////// webRTC PART /////////////////////////
@@ -84,7 +87,6 @@ async function makeRoom() {
 
     let peer = new Peer(room, { key: 'lwjd5qra8257b9' });
     let conn;
-    let count;
     let userId; // 참여 원하는 사람 id 값
 
     peer.on('open', (id) => {
@@ -93,7 +95,6 @@ async function makeRoom() {
 
     // try to connect
     function connecting() {
-        // let peerId = $('#connId').val();
         let peerId = userId;
         conn = peer.connect(peerId, { label: 'room' });
 
@@ -118,6 +119,7 @@ async function makeRoom() {
         })
     }
 
+    // try to shutdown
     function shutDown() {
         peer.destroy();
     }
@@ -131,20 +133,17 @@ async function makeRoom() {
             let join = confirm(data + ' 참여하길 원합니다');
             userId = data;
             if (join === true) {
-                connecting()
-                count += 1;
+                connecting();
+                connection.send({perm: 'allow', name: room})
             } else {
                 alert('거절하셨습니당')
+                connection.send({perm: 'refuse', name: room})
             }
         })
 
         // 받을 때 되돌려주는 값 (2)
         connection.on('open', () => {
-            if (count !== 0) {
-                connection.send({would: '입장하시겠습니까', name: room});
-            } else {
-                connection.send({would: '꺼져', name: null});
-            }
+            console.log('connection success 1')
         });
     });
 

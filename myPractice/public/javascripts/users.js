@@ -6,17 +6,22 @@ $('.enter').on('click', joinRoom)
 function whatIsRoomName() {
     $('#localVideo').hide();
     $('#room').hide();
+    $('#placeLocal').hide();
+    $('#placeRemote').hide();
+}
+
+function showElem() {
+    $('#localVideo').show();
+    $('#room').show();
+    $('#placeLocal').show();
+    $('#placeRemote').show();
+    $('.title').hide();
+    $('.roomId').hide();
+    $('.enter').hide();
 }
 
 async function joinRoom() {
     let peerId = await $('.roomId').val();
-
-    $('#localVideo').show();
-    $('#room').show();
-    $('.title').hide();
-    $('.roomId').hide();
-    $('.enter').hide();
-
 
     /////////////////////////////////////////////////////////////////
     ////////////////////////// webRTC PART /////////////////////////
@@ -98,11 +103,13 @@ async function joinRoom() {
 
         // connect 시에 room 으로 부터 데이터 받는 곳 (2)
         conn.on('data', (data) => {
-            if (data.would === '꺼져') {
+            if (data.perm === 'refuse') {
                 alert('입장 거절당하셨습니당')
-            } else {
+            } else if (data.perm === 'allow') {
                 alert('입장합니다')
                 document.getElementById("displayId").innerHTML = data.name;
+            } else {
+                alert('conenction error 3')
             }
         })
     }
@@ -115,6 +122,7 @@ async function joinRoom() {
         // room 으로 부터 응답 올 때 받는 값 (3)
         connection.on('data', (data) => {
             if (data === "room is ready") {
+                showElem();
                 navigator.getUserMedia(constraints, (stream) => {
                     var call = peer.call(connection.peer, stream);
                     call.on('stream', (stream) => {
