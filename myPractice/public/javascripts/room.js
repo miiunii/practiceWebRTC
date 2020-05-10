@@ -1,7 +1,7 @@
 'use strict'
-$(document).ready(askName)
+$(document).ready(makeRoom)
 
-$('#make').on('click', makeRoom)
+// $('#make').on('click', makeRoom)
 
 function askName() {
     $('#room').hide();
@@ -14,12 +14,12 @@ function askName() {
 
 async function makeRoom() {
     let room = await $('#roomName').val();
-    $('#room').show();
-    $('#displayId').show();
-    $('#hangout').show();
+    $('#room').hide();
+    $('#displayId').hide();
+    $('#hangout').hide();
     $('#localVideo').show();
-    $('#placeLocal').show();
-    $('#placeRemote').show();
+    $('#placeLocal').hide();
+    $('#placeRemote').hide();
     $('#askRoomName').hide();
     $('#roomName').hide();
     $('#make').hide();
@@ -85,7 +85,7 @@ async function makeRoom() {
     ////////////////////////// peerJS PART /////////////////////////
     ///////////////////////////////////////////////////////////////
 
-    let peer = new Peer(room, { key: 'lwjd5qra8257b9' });
+    let peer = new Peer('skkrypto', { key: 'lwjd5qra8257b9' });
     let conn;
     let userId; // 참여 원하는 사람 id 값
 

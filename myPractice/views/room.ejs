@@ -2,11 +2,103 @@
 <html>
 
 <head>
-  <title>wack</title>
+  <title>Voynich</title>
   <link rel='stylesheet' href='/stylesheets/index.css' />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
+  />
 </head>
 
 <body>
+  <div class="container">
+    <div class="bannger-image">
+        <img src="images/voynich.png">
+    </div>
+    <div class="url-container">
+        <span class="conference-title"> Skkrypto 개발팀 회의</span>
+        <input type="text" class="url-text" v-model="URLMessage">
+        <button class="copy-button" type="button"
+           v-clipboard:copy="URLMessage"
+           v-clipboard:success="onCopy"
+           v-clipboard:error="onError">
+            <i class="fas fa-copy" style="width: 24px; height: 24px; color: #8B6CA8; "></i>
+        </button>
+    </div>
+
+    <div class="conference-container">
+        <div class="video-container">
+            <div class="sub-videos">
+                <div class="sub-video">
+                    <video autoplay playsinline id="remoteVideo"></video>
+                </div>
+                <div class="sub-video2">
+                    <video autoplay playsinline id="localVideo"></video>
+                </div>
+            </div>
+            <div class="main-video">
+                <div class="toggle-box">
+                    <div class="mic-option">
+                        <i class="fas fa-microphone" style="width: 32px; height: 32px; color: #432361; "></i>
+                        <div class="text"> 마이크 </div>
+                    </div>
+                    <div class="camera-option">
+                        <i class="fas fa-video" style="width: 32px; height: 32px; color: #432361; "></i>
+                        <div class="text"> 캠설정</div>
+                    </div>
+                    <div class="share-option">
+                        <i class="far fa-square" style="width: 32px; height: 32px; color: #432361; "></i>
+                        <div class="text"> 화면 공유 </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <chat-box>
+            <div class="chat-container">
+                <div class="chat-output">
+                    <div class="chat-bubble last">
+                        <div class="context">
+                            <div class="avatar-box">
+                                <div class="avatar"></div>
+                                <div class="chat-name"> 여정민 </div>
+                            </div>
+            
+                            <div class="chat-message"> 이거뭐야? </div>
+                            <div class="chat-time"> 오후 2시 10분 </div>
+                        </div>
+                    </div>
+            
+                    <div class="chat-bubble me last">
+                        <div class="context">
+                            <div class="avatar-box">
+                                <div class="avatar"></div>
+                                <div class="chat-name"> 여정민 </div>
+                            </div>
+            
+                            <div class="chat-message"> 나도몰라 </div>
+                            <div class="chat-time"> 오후 2시 10분 </div>
+                        </div>
+                    </div>
+                    <div class="chat-bubble last">
+                        <div class="context">
+                            <div class="avatar-box">
+                                <div class="avatar"></div>
+                                <div class="chat-name"> 여정민 </div>
+                            </div>
+            
+                            <div class="chat-message"> 저거는 뭘까? </div>
+                            <div class="chat-time"> 오후 2시 10분 </div>
+                        </div>
+                    </div>
+                </div>
+                <form class="chat-input">
+                    <textarea  required v-model="message" v-on:keyup.enter="sendMessage"></textarea>
+                    <i class="fas fa-paper-plane send-button"></i>
+                </form>
+            </div>
+        </chat-box>
+    </div>
+</div>
   <h2 id="room">Video room</h2>
   <p id="displayId"></p>
   <h2 id="askRoomName">What is your room name</h2>
@@ -15,10 +107,251 @@
   <!-- <input type="text" id="connId">
   <button id="connButton">Connect</button> -->
   <button id="hangout">hangout</button></br></br>
-  <h3 id="placeRemote">remoteVideo</h3></br>
+  <!-- <h3 id="placeRemote">remoteVideo</h3></br>
   <video autoplay playsinline id="remoteVideo"></video>
   <h3 id="placeLocal">localVideo</h3></br>
-  <video autoplay playsinline id="localVideo"></video>
+  <video autoplay playsinline id="localVideo"></video> -->
+
+    <div id="sidebar-wrapper">
+      <div class="user-title">
+          <div style="margin: auto; display: flex;">
+              <div class="user-image"></div>
+              <div class="user-name"> Jeong Chaewon </div>
+          </div>
+      </div>
+      <div style="display: flex; flex-direction: column; height: 90%;">
+          <div class="sidebar-nav">
+              <div >
+                  <router-link to="/" style="text-decoration: none; color: white;">
+                      <div id="nav-home" class="bar-wrapper">
+                          <div class="menu-icon home">
+                              <i class="fas fa-home icon"></i>
+                          </div>
+                          홈
+                      </div>
+                  </router-link>
+              </div>
+              <div :class="{'active':hostingMenuActive}" @click="loadHostingMenu()">
+                  <router-link to="/hosting" style="text-decoration: none; color: white;">
+                      <div id="nav-hosting" class="bar-wrapper">
+                          <div class="menu-icon hosting">
+                              <i class="fas fa-video icon"></i>
+                          </div>
+                          회의 호스팅
+                      </div>
+                  </router-link>
+              </div>
+              <div :class="{'active':participateMenuActive}" @click="loadParticipateMenu()">
+                  <router-link to="/participate" style="text-decoration: none; color: white;">
+                      <div id="nav-participate" class="bar-wrapper participate">
+                          <div class="menu-icon">
+                              <i class="fas fa-user icon"></i>
+                          </div>
+                          회의 참가
+                      </div>
+                  </router-link>
+              </div>
+              <hr>
+              <div style="height: 40px; margin-top: 10px;">
+                  <h6 class="my-room" > 내 회의 리스트 </h6>
+              </div>
+              <div>
+                  <div class="bar-wrapper" :class="{'active': roomsActive[0]}" @click="loadRoomMenu(0)">
+                      <router-link to="/conference" style="text-decoration: none; color: black">
+                          <div class="room-icon">
+                              <i class="fas fa-user-friends" style="margin-right: 20px;"></i>
+                              <span style="color: black; font-size: 14px;"> Skkrypto 운영진 </span>
+                          </div>
+                      </router-link>
+                  </div>
+              </div>
+              <div>
+                  <div class="bar-wrapper" :class="{'active': roomsActive[1]}" @click="loadRoomMenu(1)">
+                      <router-link to="/conference" style="text-decoration: none; color: black">
+                          <div class="room-icon">
+                              <i class="fas fa-user-friends" style="margin-right: 20px;"> </i>
+                              <span style="color: black; font-size: 14px;"> Skkrypto 개발팀 </span>
+                          </div>
+                      </router-link>
+                  </div>
+              </div>
+              <div>
+                  <div class="bar-wrapper" :class="{'active': roomsActive[2]}" @click="loadRoomMenu(2)">
+                      <router-link to="/conference" style="text-decoration: none; color: black">
+                          <div class="room-icon">
+                              <i class="fas fa-user-friends" style="margin-right: 20px;"></i>
+                              <span style="color: black; font-size: 14px;"> Skkrypto 기획팀 </span>
+                          </div>
+                      </router-link>
+                  </div>
+              </div>
+              <div>
+                  <div class="bar-wrapper" :class="{'active': roomsActive[3]}" @click="loadRoomMenu(3)">
+                      <router-link to="/conference" style="text-decoration: none; color: black">
+                          <div class="room-icon">
+                              <i class="fas fa-user-friends" style="margin-right: 20px;"></i>
+                              <span style="color: black; font-size: 14px;"> Skkrypto 인사팀 </span>
+                          </div>
+                      </router-link>
+                  </div>
+              </div>
+          </div>
+<!--            <div class="room-title"> 참여하는 방 리스트 </div>-->
+      </div>
+  </div>
+
+  <div class="footer-area">
+    <div class="footer-body">
+        <div class="footer-nav">
+            <div class="footer-about">
+                <div class="h4"  role="heading" aria-level="2">
+                    <a href="/" style="text-decoration: none; color: white; font-size: 12px;"> 정보 </a>
+                </div>
+                <ul>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">Voynich 블로그</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">고객</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">Voynich 팀</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">왜 Voynich 일까요</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">기능</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">채용정보</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">통합</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">파트너</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">Investors</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">보도 자료</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">Media Kit</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">방법 비디오</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-download">
+                <div class="h4"  role="heading" aria-level="2">
+                    <a href="/"  style="text-decoration: none; color: white; font-size: 12px;"> 다운로드 </a>
+                </div>
+                <ul>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">회의 클라이언트</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">Voynich Rooms 클라이언트</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">브라우저 확장</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">Outlook 플러그인</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">Lync 플러그인</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">iPhone/iPad앱</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">Android앱</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-sales">
+                <div class="h4"  role="heading" aria-level="2">
+                    <a href="/"  style="text-decoration: none; color: white; font-size: 12px;"> 영업 </a>
+                </div>
+                <ul>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">1.888.887.55</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">영업에 문의</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">요금제 및 가격 책정</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">데모 요청</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">웨비나 및 이벤트</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-support">
+                <div class="h4" role="heading" aria-level="2">
+                    <a href="/" style="text-decoration: none; color: white; font-size: 12px;"> 지원 </a>
+                </div>
+                <ul>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">Voynich 테스트</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">계정</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">지원 센터</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">라이브 교육</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">피드백</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">문의처</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">접근성</a>
+                    </li>
+                    <li>
+                        <a href="/" tracking-id="footerBlog" tracking-category="NavFooter">개인정보 보호와 보안</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="cm-language">
+                <div class="h4" role="heading" aria-level="2">
+                    <a href="/"  style="text-decoration: none; color: white; font-size: 12px;"> 언어 </a>
+                </div>
+                <ul>
+                    <li>
+                        <div class="dropdown-language dropdown" role="presentation">
+                            <a href="/" class="dropdown-toggle" data-toggle="dropdown">
+                                <span> 한국어 </span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="info">
+                Copyright ©2020 Voynich Video Communications, Inc. All rights reserved.
+                <a href="/">개인정보 보호정책 및 법적 정책</a>
+                <a href="/">광고 정보</a>
+            </div>
+        </div>
+    </div>
+</div>
+  
 </body>
 
 <!-- jquery -->
@@ -36,5 +369,523 @@
 
 <!-- js -->
 <script src="/javascripts/room.js"></script>
+
+<style scoped>
+  /*#sidebar-wrapper::-webkit-scrollbar{*/
+  /*    background-color: #B591D5;*/
+  /*    width: 10px;*/
+  /*}*/
+
+  .active .fa-user-friends{
+      color: #432361;
+      margin-right: 20px;
+  }
+
+  .active .fa-user{
+      color: #432361;
+  }
+
+  .active .fa-video{
+      color: #432361;
+  }
+
+  .active{
+      background-color: lightgray;
+      border-left: 5px solid #432361;
+      width: 100% !important;
+  }
+  .room-icon{
+      width: 100%;
+      color: #AAAAAA;
+      margin-right: 20px;
+  }
+
+  .my-room{
+      color: black;
+      font-size: 16px;
+      margin-left: 1.5rem;
+      margin-top: 5px;
+      font-weight: 600;
+  }
+
+  hr{
+      margin-bottom: 0;
+      margin-top: 1rem;
+      border: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      width: 90%;
+  }
+
+  .icon{
+      width: 16px;
+      height: 16px;
+      display: flex;
+      margin: auto;
+      color: #AAAAAA
+  }
+
+  .menu-icon{
+      width: 16px;
+      height: 16px;
+      margin-right: 20px;
+  }
+
+  .bar-wrapper{
+      font-size: 0.9rem;
+      color: black;
+      width: 200px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+  }
+
+  .bar-wrapper:hover{
+      text-decoration: none;
+      /*box-shadow: black;*/
+      box-shadow: 1px 1px 20px #aaaaaa;
+      width: 100%;
+  }
+
+  .room-title{
+      color: white;
+      margin-top: .5rem;
+      margin-left: 1rem;
+      margin-bottom: .5rem;
+      font-family: fantasy;
+      font-weight: bold;
+      font-size: 0.9rem;
+      line-height: 1.2;
+  }
+
+  .sidebar-nav div{
+      line-height: 40px;
+  }
+
+  .sidebar-nav{
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 250px;
+      margin: 0;
+      padding: 1rem 0 0 0;
+      list-style: none;
+  }
+
+  .user-image {
+      /*background-size: 50px 50px;*/
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      color: #8B6CA8;
+      background: white url("images/voynich.png") center;
+      background-size: cover;
+  }
+  .user-name{
+      font-family: fantasy;
+      display: flex;
+      margin: auto auto auto 20px;
+  }
+
+  .user-title{
+      display: flex;
+      background-color: #432361;
+      color: white;
+      height: 50px;
+  }
+
+
+  #sidebar-wrapper{
+      box-shadow: inset -7px 0 9px -7px rgba(0, 0, 0, 0.4);
+      /*background: #A365A5;*/
+      background: rgb(239, 239, 239);
+      height: 100%;
+      width: 250px;
+      z-index: 9000;
+      position: fixed;
+      top: 0;
+      left: 250px;
+      margin-left: -250px;
+      overflow-y: hidden;
+      overflow-x: hidden;
+      transition: all 0.5s ease;
+  }
+  .conference-title{
+        font-size: 30px;
+        font-weight: 900;
+    }
+
+    .copy-button{
+        border: none;
+        background: white;
+    }
+
+    .url-text{
+        display: none;
+    }
+
+    .url-container{
+        margin: auto;
+    }
+
+    .container{
+        display: flex;
+        flex-direction: column;
+    }
+    .bannger-image{
+        margin: auto;
+    }
+
+    .video-container{
+       display: flex;
+       flex-direction: column;
+    }
+    .main-video{
+        width: 100%;
+        background: url("images/conference.png") center;
+        background-size: cover;
+        max-width: 800px;
+        display: flex;
+        height: 600px;
+        margin: auto;
+    }
+
+    .sub-videos{
+        display: flex;
+        flex-direction: row;
+        margin: auto;
+        width: 800px;
+        height: 200px;
+    }
+
+    .sub-video2{
+        background-size: cover;
+        margin: auto;
+        width: 300px;
+        height: 300px;
+    }
+
+    .sub-video{
+        background-size: cover;
+        margin: auto;
+        width: 300px;
+        height: 300px;
+    }
+
+    #remoteVideo {
+      width: 300px;
+      height: 225px;
+    }
+
+    /* .sub-video3{
+        background: url("../assets/people7.jpg") center ;
+        background-size: cover;
+        margin: auto;
+        width: 180px;
+        height: 180px;
+    }
+    .sub-video4{
+        background: url("../assets/people9.jpg") center ;
+        background-size: cover;
+        margin: auto;
+        width: 180px;
+        height: 180px;
+    } */
+
+    .conference-container{
+        display: flex;
+        margin: auto;
+        width: 900px;
+    }
+
+    .mic-option {
+        display: flex;
+        width: 48px;
+        height: 52px;
+        margin: auto 20px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .text{
+        margin: auto;
+        font-size: 10px;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .camera-option{
+        width: 48px;
+        height: 52px;
+        margin: auto 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .share-option{
+        width: 48px;
+        height: 52px;
+        margin: auto 20px;
+        flex-direction: column;
+        align-items: center;
+        display: flex;
+    }
+
+    .toggle-box{
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        width: 100%;
+        margin-top: auto;
+        height: 60px;
+        background-color: lightgray;
+    }
+    .chat-container{
+        width: 300px;
+        height: 800px;
+        margin-left: 20px;
+        background: lightgray;
+    }
+
+    .chat-container .chat-output::-webkit-scrollbar{
+        display: none;
+        -ms-overflow-style: none;
+    }
+
+    .chat-output{
+        padding: 15px 20px;
+        height: calc(100% - 60px);
+        overflow-y: scroll;
+    }
+
+    .chat-bubble .context {
+        margin-top: 5px;
+        max-width: 60%;
+    }
+
+    .chat-bubble:first-child {
+        margin-top: 0;
+    }
+
+    .chat-bubble.me {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .chat-bubble.me .chat-time{
+        width: 90px;
+        text-align: center !important;
+    }
+
+    .chat-bubble .avatar {
+        background: url("images/voynich.png") center !important;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+        margin-left: 0;
+        margin-right: 10px;
+        background-size: 24px !important;
+        border-radius: 50%;
+    }
+
+    .chat-bubble .chat-name {
+        font-size: x-small;
+        display: inline;
+        color: rgba(0, 0, 0, 0.4);
+    }
+
+    .chat-bubble .freezing {
+        padding: 15px 20px;
+        border-radius: 0 10px 10px 10px;
+        background: cyan;
+        white-space: pre-line;
+        word-break: break-word;
+        user-select: text;
+        color: yellow;
+    }
+
+    .chat-bubble .chat-time {
+        width: 90px;
+        display: none;
+        font-size: x-small;
+        color: rgba(0, 0, 0, 0.4);
+        text-align: center;
+    }
+
+    .chat-bubble.continue .avatar {
+        opacity: 0;
+    }
+
+    .chat-bubble.continue .chat-name {
+        display: none;
+    }
+    .chat-bubble.last .chat-time {
+        display: block;
+    }
+
+    .chat-bubble.me .chat-message {
+        border-radius: 10px 10px 0 10px;
+        background: #8B6CA8;
+        color: white;
+    }
+
+    .chat-bubble .chat-message {
+        font-size: 11px;
+        padding: 15px 20px;
+        border-radius: 0 10px 10px 10px;
+        background: rgb(248, 248, 248);
+        white-space: pre-line;
+        word-break: break-word;
+        user-select: text;
+        width: 90px;
+        max-width: 100px;
+    }
+
+
+    .chat-bubble.me .chat-time {
+        text-align: left;
+    }
+
+    .chat-bubble.last .chat-time {
+        display: block;
+    }
+
+    .chat-bubble.continue .avatar {
+        opacity: 0;
+    }
+
+    .avatar-box{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .chat-input textarea {
+        font-size: 18px;
+        max-height: 40px;
+        width: 300px;
+        height: 40px;
+        outline: none;
+        background-color: white;
+    }
+
+    .chat-input {
+        margin-top: 20px;
+        padding: 10px 0 !important;
+    }
+    .chat-input > * {
+        float: left;
+    }
+
+    .chat-input img {
+        padding: 4px 0;
+    }
+
+    .chat-input textarea:focus, input:focus{
+        font-size: 11px;
+    }
+
+    .send-button{
+        width: 20px;
+        height: 20px;
+        position: relative;
+        left: 270px;
+        top: -30px;
+        color: blueviolet;
+    }
+    .footer-body a{
+        text-decoration: none;
+        color: white;
+    }
+
+    .footer-body ul{
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .footer-body ul li{
+        font-size: 11px;
+        color: white;
+    }
+
+    .footer-area{
+        display: flex;
+        margin-top: 200px;
+        width: 100%;
+        height: 300px;
+        background: linear-gradient(to left, #432361 0, #A365A5);
+    }
+
+    .footer-body{
+        margin: auto;
+        height: 300px;
+    }
+
+    .footer-nav{
+        position: relative;
+        left: 80px;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .footer-area>.footer-body>.footer-nav>div{
+        vertical-align: top;
+    }
+
+    .footer-about{
+        padding-left: 50px;
+        width: 190px;
+    }
+
+    .footer-download{
+        width: 210px;
+    }
+
+    .footer-sales{
+        width: 200px;
+    }
+
+    .footer-support{
+        width: 200px;
+    }
+
+    .cm-language{
+        width: 220px;
+    }
+
+    .footer-area>.footer-body>.footer-nav .h4{
+        font-size: 12px;
+        font-weight: 600;
+        margin: 30px 0 12px 0;
+    }
+
+    .info{
+        font-size: 11px;
+        color: white;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .info a{
+        padding: 0 6px;
+        border-left: 1px solid rgba(255,255,255,0.7);
+        color: white;
+        text-decoration: none;
+    }
+
+    .dropdown-language{
+        display: inline-block;
+    }
+
+    .cm-language a.dropdown-toggle{
+        border: 1px solid rgba(255,255,255,.3);
+        display: inline-block;
+        padding: 4px 15px 4px 15px;
+    }
+</style>
 
 </html>
